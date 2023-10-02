@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generator Nomor Surat</title>
+  <link rel="icon" href="https://raw.githubusercontent.com/mziyadam/Beranda/master/profildiri.ico">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa"
+    crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
+
+</head>
+<script src="https://unpkg.com/vue@3"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+  $(document).ready(function () {
+    //change selectboxes to selectize mode to be searchable
+    $("select").select2();
+  });
+</script>
+<style>
+  .container {
+    font-size: small !important;
+  }
+
+  .input-group-text {
+    width: 12em
+  }
+</style>
+<div id="app">
+  <div class="container m-2">
+    <!-- <h1 class="text-center mt-2">Zradio</h1>
+    <hr>
+  <p>Todo id: {{ todoId }}</p>
+  <button @click="todoId++">Fetch next todo</button>
+  <p v-if="!todoData">Loading...</p>
+  <pre v-else>{{ todoData }}</pre> -->
+    <div class="row  d-flex align-items-center">
+      <div class="col-md-3 mb-3">
+        Tim
+      </div>
+      <div class="col-md-9 mb-3">
+        <div class="input-group input-group-sm ">
+          <!-- <label class="input-group-text" for="inputGroupSelect01">Tim</label> -->
+          <!-- v-model="kodeTim" -->
+          <select class="form-select" id="kodeTim1">
+            <option v-for="t in tim" :value="t.nomor" :key="tim.nomor">{{t.nama}} ({{t.nomor}})</option>
+          </select>
+          <!-- {{kodeTim}} -->
+        </div>
+      </div>
+
+      <div class="col-md-3 mb-auto mt-2">
+        Klasifikasi
+      </div>
+      <div class="col-md-9">
+        <div class="input-group input-group-sm mb-3">
+          <select id="kodeKlasifikasi1" class="form-control" aria-label="Default select example">
+            <!-- <option selected>Pilih bank</option> -->
+            <option v-for="res in klasifikasi" :value="res.nomor" :key="klasifikasi.nomor">
+              {{ res.nama }} ({{ res.nomor }})
+            </option>
+          </select>
+          <!-- {{kodeKlasifikasi}} -->
+        </div>
+      </div>
+      <div class="col-md-3 mb-auto mt-2">
+        Tujuan
+      </div>
+
+      <div class="col-md-9">
+        <div class="input-group input-group-sm mb-3">
+          <input type="text" class="form-control" v-model="tujuan" aria-label="Sizing example input"
+            aria-describedby="inputGroup-sizing-sm">
+        </div>
+      </div>
+
+      <div class="col-md-3 mb-auto mt-2">
+        Perihal
+      </div>
+
+      <div class="col-md-9">
+        <div class="input-group input-group-sm mb-3">
+          <textarea class="form-control" v-model="perihal" id="exampleFormControlTextarea1" rows="3"></textarea>
+        </div>
+      </div>
+
+
+      <div class="col-md-3 mb-auto mt-2">
+        Jumlah
+      </div>
+
+      <div class="col-md-9">
+        <div class="input-group input-group-sm mb-3">
+          <input type="number" class="form-control" v-model="jumlah" aria-label="Sizing example input"
+            aria-describedby="inputGroup-sizing-sm">
+        </div>
+        {{kodeTim}}
+        {{rslt}}
+        <div class="d-grid gap-2" @click="subm()">
+          <button class="btn btn-primary" type="button">Generate</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  const { createApp } = Vue
+
+  createApp({
+    data() {
+      return {
+        todoId: 1,
+        todoData: null,
+        kodeTim: '',
+        kodeKlasifikasi: '',
+        tujuan: '',
+        perihal: '',
+        jumlah: '',
+        rslt: 'none',
+        tim: [
+          {
+            nama: "Tata Usaha",
+            nomor: "1"
+          }
+        ],
+        klasifikasi: [
+          {
+            nama: "Pengkajian dan Pengusulan Kebijakan",
+            nomor: "PS-000"
+          }
+        ]
+      }
+    },
+    methods: {
+      async fetchData() {
+        // this.todoData = null
+        const resTim = await fetch(
+          `http://localhost:5000/tim`
+        )
+        const dataTim = await resTim.json()
+        this.tim = dataTim.recordset
+        
+        const resKlasifikasi = await fetch(
+          `http://localhost:5000/klasifikasi`
+        )
+        const dataKlasifikasi = await resKlasifikasi.json()
+        this.klasifikasi = dataKlasifikasi.recordset
+      },
+      async subm() {
+        this.kodeTim = document.getElementById("kodeTim1").value;
+        this.kodeKlasifikasi = document.getElementById("kodeKlasifikasi1").value;
+        const requestOptions = {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ "id": "Vue POST Request Example" })
+        };
+        const response = await fetch("http://localhost:5000/test-post", requestOptions);
+        const data = await response.json();
+        this.rslt = data.id;
+        //       const requestOptions = {
+        //   method: "POST",
+        //   headers: { "Content-Type": "application/json" },
+        //   body: JSON.stringify({ title: "Vue POST Request Example" })
+        // };
+        // const response = await fetch("https://jsonplaceholder.typicode.com/posts", requestOptions);
+        // const data = await response.json();
+        // this.rslt = data.id;
+
+      }
+    },
+    mounted() {
+      this.fetchData()
+    }
+  }).mount('#app')
+</script>
+
+
+</html>

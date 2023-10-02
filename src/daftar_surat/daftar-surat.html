@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generator Nomor Surat</title>
+  <link rel="icon" href="https://raw.githubusercontent.com/mziyadam/Beranda/master/profildiri.ico">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa"
+    crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
+  <script src="../moment.js"></script>
+
+</head>
+<script src="https://unpkg.com/vue@3"></script>
+<style>
+  table,
+  th,
+  tr,
+  td,
+  thead {
+    border: 1px solid black;
+    border-top: none !important;
+    border-bottom: none !important;
+    background-color: white;
+    /* border-collapse: collapse;*/
+    box-shadow: inset 0 0.5px 0 #000000, inset 0 -0.5px 0 #000000;
+  }
+
+  .container {
+    font-size: x-small !important;
+  }
+</style>
+<div id="app">
+  <div class="container">
+    <div class="m-2" style="height:300px;overflow:auto;">
+      <table class="table table-sm" id="tbl-data">
+        <thead class="sticky-top">
+          <tr>
+            <th class="text-center" scope="col">No Agenda</th>
+            <th class="text-center" scope="col">Nomor Surat</th>
+            <th class="text-center" scope="col">Tanggal Surat</th>
+            <th class="text-center" scope="col">Tujuan</th>
+            <th class="text-center" scope="col">Perihal</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- <p v-if="!todoData">
+            Loading...
+          </p>
+          <pre v-else> -->
+          <tr v-for="data in todoData.recordset">
+            <td>{{data.id}}</td>
+            <td>{{data.nomor_surat}}</td>
+            <td>{{data.tanggal_surat}}</td>
+            <td>{{data.tujuan}}</td>
+            <td>{{data.perihal}}</td>
+          </tr>
+          <!-- </pre> -->
+        </tbody>
+      </table>
+    </div>
+<!-- onclick="exportReportToExcel(this)" -->
+    <div class="fixed-bottom p-2">
+      <!-- {{tes}} -->
+      <div class="d-flex flex-row-reverse">
+        <button class="btn btn-primary mt-2 mb-2" id="exportButton" 
+        
+        >Export</button>
+
+      </div>
+      <table class="table table-sm">
+        <thead class="sticky-top">
+          <tr>
+            <th class="text-center" scope="col">No Agenda</th>
+            <th class="text-center" scope="col">Nomor Surat</th>
+            <th class="text-center" scope="col">Tanggal Surat</th>
+            <th class="text-center" scope="col">Tujuan</th>
+            <th class="text-center" scope="col">Perihal</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <input class="form-control" v-model='noAgenda' type="text">
+            </td>
+            <td>
+              <input class="form-control" v-model='nomorSurat' type="text">
+            </td>
+            <td>
+              <input class="form-control" v-model='tanggalSurat' type="text">
+            </td>
+            <td>
+              <input class="form-control" v-model='tujuan' type="text">
+            </td>
+            <td>
+              <input class="form-control" v-model='perihal' type="text">
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="d-flex flex-row-reverse">
+        <button class="btn btn-primary" @click="fetchData">Cari</button>
+
+      </div>
+      <!-- {{todoData["recordset"]}} -->
+      <!-- <p v-if="!todoData">Loading...</p> 
+      <pre v-else>{{ todoData.recordset }}</pre> -->
+    </div>
+  </div>
+</div>
+
+
+<!-- Aturan Nomor surat:
+B-{no urut}/9402{kode tim}/{kode klasifikasi}/{bulan surat}/{tahun surat}
+
+Kode Tim:
+1 Tata Usaha
+2 Sosial
+3 Produksi
+4 Neraca
+5 IPDS -->
+<script>
+  const { createApp } = Vue
+
+  createApp({
+    data() {
+      return {
+        noAgenda: '',
+        nomorSurat: '',
+        tanggalSurat: '',
+        tujuan: '',
+        perihal: '',
+        todoId: 1,
+        tes: '',
+        todoData: { "recordsets": [[{ "test": "" }]], "recordset": [{ "test": "" }], "output": {}, "rowsAffected": [] }
+      }
+    },
+    methods: {
+      async fetchData() {
+        this.todoData = null
+        const res = await fetch(
+          // `http://localhost:5000/surat`
+          `http://localhost:5000/surat?id=${this.noAgenda}&nomor_surat=${this.nomorSurat}&tanggal_surat=${this.tanggalSurat}&tujuan=${this.tujuan}&perihal=${this.perihal}`
+        )
+        this.tes = `http://localhost:5000/surat?id=${this.noAgenda}&nomor_surat=${this.nomorSurat}&tanggal_surat=${this.tanggalSurat}&tujuan=${this.tujuan}&perihal=${this.perihal}`;
+        this.todoData = await res.json()
+      }
+    },
+    mounted() {
+      this.fetchData()
+    }
+  }).mount('#app')
+
+function exportTableToExcel(tableId) {
+  // Get the table element using the provided ID
+  const table = document.getElementById(tableId);
+  
+  // Extract the HTML content of the table
+  const html = table.outerHTML;
+
+  // Create a Blob containing the HTML data with Excel MIME type
+  const blob = new Blob([html], { type: "application/vnd.ms-excel" });
+
+  // Create a URL for the Blob
+  const url = URL.createObjectURL(blob);
+
+  // Create a temporary anchor element for downloading
+  const a = document.createElement("a");
+  a.href = url;
+
+  // Set the desired filename for the downloaded file
+  a.download = "table.xls";
+
+  // Simulate a click on the anchor to trigger download
+  a.click();
+
+  // Release the URL object to free up resources
+  URL.revokeObjectURL(url);
+}
+
+// Attach the function to the export button's click event
+document.getElementById("exportButton").addEventListener("click", function () {
+  exportTableToExcel("tbl-data");
+});
+</script>
+
+</html>
