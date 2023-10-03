@@ -48,21 +48,7 @@ exp.post('/login', function (req, res) {
 });
 
 exp.get('/', function (req, res) {
-  var config = {
-    user: req.session.user,
-    password: req.session.password,
-    server: req.session.server,
-    database: req.session.database,
-    trustServerCertificate: true
-  };
-
-  sql.connect(config, function (err) {
-    var request = new sql.Request();
-    request.query('select * from test', (err, result) => {
-      console.dir(result)
-      res.send(result);
-    })
-  });
+  res.send('welcome');
 });
 
 exp.get('/surat', function (req, res) {
@@ -105,12 +91,6 @@ exp.get('/surat', function (req, res) {
     })
   });
 });
-
-exp.post('/test-post', function (req, res) {
-  var param = req.body;
-  res.send(param);
-});
-
 
 exp.get('/tim', function (req, res) {
   var config = {
