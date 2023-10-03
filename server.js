@@ -12,7 +12,9 @@ var sql = require('mssql');
 // })
 // var bodyParser = require('body-parser')
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));     // to support JSON-encoded bodies
+app.use(express.urlencoded({
+    extended: true
+})); // to support JSON-encoded bodies
 // app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
 //   extended: true
 // })); 
@@ -74,7 +76,7 @@ app.get('/surat', function (req, res) {
 
     // res.send("exec GetSurat " + query);
     //simple query
-    pool.request().query("exec GetSurat " + query, (err, result) => {
+    pool.request().query(`exec GetSurat ${query}`, (err, result) => {
         console.dir(result)
         res.send(result);
     })
@@ -111,6 +113,17 @@ app.get('/klasifikasi', function (req, res) {
         console.dir(result)
         res.send(result);
     })
+});
+
+app.post('/generate-surat', function (req, res) {
+    var param = req.body;
+    // res.send(req.body);
+    // res.send(param);
+    //simple query
+    pool.request().query(`exec AddSurat @nomor_surat = '${param.nomor_surat}', @tujuan='${param.tujuan}', @perihal='${param.perihal}', @jumlah=${param.jumlah}`, (err, result) => {
+        console.dir(result)
+        res.send(result);
+    });
 });
 
 var server = app.listen(5000, function () {
