@@ -126,9 +126,8 @@
                 };
                 const response = await fetch("http://localhost:5000/login", requestOptions);
                 const data = await response.json();
-                this.status = data.rowsAffected.length
-                // this.status='1'
-                if (this.status >= 1) {
+                this.status = 'connected'
+                if (data.rowsAffected.length >= 1) {
                     document.getElementById("btn-konek").disabled = false;
                 }
             },
