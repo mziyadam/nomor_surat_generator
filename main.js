@@ -5,11 +5,34 @@ const {
 } = require('electron')
 const path = require('path')
 const srv = require('./server')
+
+var express = require('express');
+const cookieParser = require("cookie-parser");
+
+const session = require("express-session");
+
 function handleSetTitle(event, title) {
   const webContents = event.sender
   const win = BrowserWindow.fromWebContents(webContents)
   win.setTitle(title)
 }
+var exp = express();
+exp.use(cookieParser());
+
+exp.use(session({
+  secret: "st2023st",
+  saveUninitialized: true,
+  resave: true
+}));
+
+exp.get('/main', function (q, r, n) {
+  r.send(q.session.loggedIn)
+  // r.send('tes')
+});
+
+exp.listen(4000, function () {
+  console.log('Server is running..');
+});
 
 function createWindow() {
   const mainWindow = new BrowserWindow({
