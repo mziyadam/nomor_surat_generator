@@ -49,10 +49,6 @@
           </tr>
         </thead>
         <tbody>
-          <!-- <p v-if="!todoData">
-            Loading...
-          </p>
-          <pre v-else> -->
           <tr v-for="data in todoData.recordset">
             <td>{{data.id}}</td>
             <td>{{data.nomor_surat}}</td>
@@ -60,13 +56,10 @@
             <td>{{data.tujuan}}</td>
             <td>{{data.perihal}}</td>
           </tr>
-          <!-- </pre> -->
         </tbody>
       </table>
     </div>
-<!-- onclick="exportReportToExcel(this)" -->
     <div class="fixed-bottom p-2">
-      <!-- {{tes}} -->
       <div class="d-flex flex-row-reverse">
         <button class="btn btn-primary mt-2 mb-2" id="exportButton" 
         
@@ -107,23 +100,10 @@
         <button class="btn btn-primary" @click="fetchData">Cari</button>
 
       </div>
-      <!-- {{todoData["recordset"]}} -->
-      <!-- <p v-if="!todoData">Loading...</p> 
-      <pre v-else>{{ todoData.recordset }}</pre> -->
     </div>
   </div>
 </div>
 
-
-<!-- Aturan Nomor surat:
-B-{no urut}/9402{kode tim}/{kode klasifikasi}/{bulan surat}/{tahun surat}
-
-Kode Tim:
-1 Tata Usaha
-2 Sosial
-3 Produksi
-4 Neraca
-5 IPDS -->
 <script>
   const { createApp } = Vue
 
@@ -137,14 +117,13 @@ Kode Tim:
         perihal: '',
         todoId: 1,
         tes: '',
-        todoData: { "recordsets": [[{ "test": "" }]], "recordset": [{ "test": "" }], "output": {}, "rowsAffected": [] }
+        todoData: { "recordsets": [[]], "recordset": [], "output": {}, "rowsAffected": [] }
       }
     },
     methods: {
       async fetchData() {
         this.todoData = null
         const res = await fetch(
-          // `http://localhost:5000/surat`
           `http://localhost:5000/surat?id=${this.noAgenda}&nomor_surat=${this.nomorSurat}&tanggal_surat=${this.tanggalSurat}&tujuan=${this.tujuan}&perihal=${this.perihal}`
         )
         this.tes = `http://localhost:5000/surat?id=${this.noAgenda}&nomor_surat=${this.nomorSurat}&tanggal_surat=${this.tanggalSurat}&tujuan=${this.tujuan}&perihal=${this.perihal}`;
