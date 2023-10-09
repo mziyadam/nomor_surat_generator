@@ -1,10 +1,9 @@
-
 var express = require('express');
 var exp = express();
 var sql = require('mssql');
 const cookieParser = require("cookie-parser");
 const expSession = require("express-session");
-
+const fs = require('fs');
 exp.use(express.json());
 exp.use(express.urlencoded({
   extended: true
@@ -19,6 +18,28 @@ exp.use(expSession({
 
 exp.post('/logout', function (req, res) {
   req.session.destroy()
+  //   const str = `{
+  //     "user": ${null},
+  //     "password": ${null},
+  //     "server": ${null},
+  //     "database": ${null}
+  // }`;
+  const str = '';
+  const filename = "setting.json";
+
+  fs.open(filename, "w", (err, fd) => {
+    if (err) {
+      console.log(err.message);
+    } else {
+      fs.write(fd, str, (err, bytes) => {
+        if (err) {
+          console.log(err.message);
+        } else {
+          console.log(bytes + ' bytes written');
+        }
+      })
+    }
+  })
   sql.close()
   res.send("Your are logged out ");
 })
@@ -43,6 +64,28 @@ exp.post('/login', function (req, res) {
       res.send(result)
       req.session.loggedIn = 'y'
       req.session.save()
+
+      const str = `{
+    "user": "${param.user}",
+    "password": "${param.password}",
+    "server": "${param.server}",
+    "database": "${param.database}"
+}`;
+      const filename = "setting.json";
+
+      fs.open(filename, "w", (err, fd) => {
+        if (err) {
+          console.log(err.message);
+        } else {
+          fs.write(fd, str, (err, bytes) => {
+            if (err) {
+              console.log(err.message);
+            } else {
+              console.log(bytes + ' bytes written');
+            }
+          })
+        }
+      })
     })
   });
 });
@@ -75,11 +118,16 @@ exp.get('/surat', function (req, res) {
     query = query.substring(0, query.length - 1);
   }
 
+  const data = fs.readFileSync('./setting.json', {
+    encoding: 'utf8',
+    flag: 'r'
+  });
+  const jsonData = JSON.parse(data);
   var config = {
-    user: req.session.user,
-    password: req.session.password,
-    server: req.session.server,
-    database: req.session.database,
+    user: req.session.user || jsonData.user,
+    password: req.session.password || jsonData.password,
+    server: req.session.server || jsonData.server,
+    database: req.session.database || jsonData.database,
     trustServerCertificate: true
   };
 
@@ -93,11 +141,16 @@ exp.get('/surat', function (req, res) {
 });
 
 exp.get('/tim', function (req, res) {
+  const data = fs.readFileSync('./setting.json', {
+    encoding: 'utf8',
+    flag: 'r'
+  });
+  const jsonData = JSON.parse(data);
   var config = {
-    user: req.session.user,
-    password: req.session.password,
-    server: req.session.server,
-    database: req.session.database,
+    user: req.session.user || jsonData.user,
+    password: req.session.password || jsonData.password,
+    server: req.session.server || jsonData.server,
+    database: req.session.database || jsonData.database,
     trustServerCertificate: true
   };
 
@@ -110,11 +163,17 @@ exp.get('/tim', function (req, res) {
   });
 });
 exp.get('/klasifikasi', function (req, res) {
+
+  const data = fs.readFileSync('./setting.json', {
+    encoding: 'utf8',
+    flag: 'r'
+  });
+  const jsonData = JSON.parse(data);
   var config = {
-    user: req.session.user,
-    password: req.session.password,
-    server: req.session.server,
-    database: req.session.database,
+    user: req.session.user || jsonData.user,
+    password: req.session.password || jsonData.password,
+    server: req.session.server || jsonData.server,
+    database: req.session.database || jsonData.database,
     trustServerCertificate: true
   };
 
@@ -134,11 +193,17 @@ exp.get('/main', function (req, res) {
 
 exp.post('/generate-surat', function (req, res) {
   var param = req.body;
+
+  const data = fs.readFileSync('./setting.json', {
+    encoding: 'utf8',
+    flag: 'r'
+  });
+  const jsonData = JSON.parse(data);
   var config = {
-    user: req.session.user,
-    password: req.session.password,
-    server: req.session.server,
-    database: req.session.database,
+    user: req.session.user || jsonData.user,
+    password: req.session.password || jsonData.password,
+    server: req.session.server || jsonData.server,
+    database: req.session.database || jsonData.database,
     trustServerCertificate: true
   };
 

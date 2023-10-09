@@ -38,7 +38,7 @@
 <div id="app">
     <div class="container m-2">
         <div class="row  d-flex align-items-center">
-            <div class="col-md-3 mb-auto mt-2">
+            <!-- <div class="col-md-3 mb-auto mt-2">
                 Username
             </div>
 
@@ -67,9 +67,31 @@
                     <input required type="text" class="form-control" v-model="server" aria-label="Sizing example input"
                         aria-describedby="inputGroup-sizing-sm">
                 </div>
+            </div> -->
+
+            <div class="col-md-5 mb-auto mt-2">
+                Ip Server\Sql Server Instance
             </div>
 
-            <div class="col-md-3 mb-auto mt-2">
+            <div class="col-md-7">
+                <div class="input-group input-group-sm mb-3">
+                    <input required type="text" class="form-control" v-model="serverDb"
+                        aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">
+                </div>
+                <div class="mb-3">
+                    {{status}}
+                </div>
+                <div class="d-flex flex-row-reverse row">
+                    <div class="d-grid gap-2 col-md-6" @click="clos()">
+                        <button class="btn btn-primary" id="btn-konek" disabled type="button">Connect</button>
+                    </div>
+                    <div class="d-grid gap-2 col-md-6" @click="subm()">
+                        <button class="btn btn-primary" type="button">Test</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- <div class="col-md-3 mb-auto mt-2">
                 Database
             </div>
 
@@ -89,7 +111,7 @@
                         <button class="btn btn-primary" type="button">Test</button>
                     </div>
                 </div>
-            </div>
+            </div> -->
         </div>
     </div>
 </div>
@@ -109,19 +131,22 @@
                 password: '',
                 server: '',
                 database: '',
+                serverDb: '',
                 status: 'input belum sesuai',
             }
         },
         methods: {
             async subm() {
+                const serverDbArray = this.serverDb.split("\\");
                 const requestOptions = {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
+
                     body: JSON.stringify({
-                        "user": this.user,
-                        "password": this.password,
-                        "server": this.server,
-                        "database": this.database
+                        "user": "surat",
+                        "password": "surat",
+                        "server": serverDbArray[0] || "",
+                        "database": serverDbArray[1] || ""
                     })
                 };
                 const response = await fetch("http://localhost:5000/login", requestOptions);
