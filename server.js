@@ -3,7 +3,7 @@ var express = require('express');
 var exp = express();
 var sql = require('mssql');
 const cookieParser = require("cookie-parser");
-const expSession = require("express-session");
+// const expSession = require("express-session");
 
 exp.use(express.json());
 exp.use(express.urlencoded({
@@ -11,47 +11,70 @@ exp.use(express.urlencoded({
 })); // to support JSON-encoded bodies
 
 exp.use(cookieParser());
-exp.use(expSession({
-  secret: "st2023st",
-  saveUninitialized: true,
-  resave: true
-}));
+// exp.use(expSession({
+//   secret: "st2023st",
+//   saveUninitialized: true,
+//   resave: true
+// }));
 
-exp.post('/logout', function (req, res) {
-  req.session.destroy()
+exp.post('/logout', async function (req, res) {
+  // req.session.destroy()
+  res.clearCookie('user');
+  res.clearCookie('password');
+  res.clearCookie('server');
+  res.clearCookie('database');
+  res.clearCookie('loggedIn');
   sql.close()
   res.send("Your are logged out ");
 })
-exp.post('/login', function (req, res) {
+exp.post('/login', async function (req, res) {
   sql.close()
   var param = req.body;
-  req.session.user = param.user
-  req.session.password = param.password
-  req.session.server = param.server
-  req.session.database = param.database
-  req.session.save()
+  // req.session.user = param.user
+  // req.session.password = param.password
+  // req.session.server = param.server
+  // req.session.database = param.database
+  // req.session.save()
+  req.cookies.user = param.user
+  req.cookies.password = param.password
+  req.cookies.server = param.server
+  req.cookies.database = param.database
+  // res.cookie('user', param.user);
+  // res.cookie('password', param.password);
+  // res.cookie('server', param.server);
+  // res.cookie('database', param.database);
+  
+  // res.send(req.cookies)
   var config = {
-    user: req.session.user,
-    password: req.session.password,
-    server: req.session.server,
-    database: req.session.database,
+    user: await req.cookies['user'],
+    password: await req.cookies['password'],
+    server: await req.cookies['server'],
+    database: await req.cookies['database'],
     trustServerCertificate: true
   };
+  // var config = {
+  //   user: req.session.user,
+  //   password: req.session.password,
+  //   server: req.session.server,
+  //   database: req.session.database,
+  //   trustServerCertificate: true
+  // };
   sql.connect(config, function (err) {
     var request = new sql.Request();
     request.query("select 1 as ok", function (err, result) {
+      req.cookies.loggedIn='y';
       res.send(result)
-      req.session.loggedIn = 'y'
-      req.session.save()
+      // req.session.loggedIn = 'y'
+      // req.session.save()
     })
   });
 });
 
-exp.get('/', function (req, res) {
+exp.get('/', async function (req, res) {
   res.send('welcome');
 });
 
-exp.get('/surat', function (req, res) {
+exp.get('/surat', async function (req, res) {
   var query = '';
   if (req.query.id) {
     query += "@id = '" + req.query.id + "',";
@@ -76,12 +99,19 @@ exp.get('/surat', function (req, res) {
   }
 
   var config = {
-    user: req.session.user,
-    password: req.session.password,
-    server: req.session.server,
-    database: req.session.database,
+    user:  await req.cookies['user'],
+    password:  await req.cookies['password'],
+    server:  await req.cookies['server'],
+    database:  await req.cookies['database'],
     trustServerCertificate: true
   };
+  // var config = {
+  //   user: req.session.user,
+  //   password: req.session.password,
+  //   server: req.session.server,
+  //   database: req.session.database,
+  //   trustServerCertificate: true
+  // };
 
   sql.connect(config, function (err) {
     var request = new sql.Request();
@@ -92,14 +122,22 @@ exp.get('/surat', function (req, res) {
   });
 });
 
-exp.get('/tim', function (req, res) {
+exp.get('/tim', async function (req, res) {
+  
   var config = {
-    user: req.session.user,
-    password: req.session.password,
-    server: req.session.server,
-    database: req.session.database,
+    user:  await req.cookies['user'],
+    password:  await req.cookies['password'],
+    server:  await req.cookies['server'],
+    database:  await req.cookies['database'],
     trustServerCertificate: true
   };
+  // var config = {
+  //   user: req.session.user,
+  //   password: req.session.password,
+  //   server: req.session.server,
+  //   database: req.session.database,
+  //   trustServerCertificate: true
+  // };
 
   sql.connect(config, function (err) {
     var request = new sql.Request();
@@ -109,14 +147,22 @@ exp.get('/tim', function (req, res) {
     })
   });
 });
-exp.get('/klasifikasi', function (req, res) {
+exp.get('/klasifikasi', async function (req, res) {
+  
   var config = {
-    user: req.session.user,
-    password: req.session.password,
-    server: req.session.server,
-    database: req.session.database,
+    user:  await req.cookies['user'],
+    password:  await req.cookies['password'],
+    server:  await req.cookies['server'],
+    database:  await req.cookies['database'],
     trustServerCertificate: true
   };
+  // var config = {
+  //   user: req.session.user,
+  //   password: req.session.password,
+  //   server: req.session.server,
+  //   database: req.session.database,
+  //   trustServerCertificate: true
+  // };
 
   sql.connect(config, function (err) {
     var request = new sql.Request();
@@ -127,20 +173,29 @@ exp.get('/klasifikasi', function (req, res) {
   });
 });
 
-exp.get('/main', function (req, res) {
-  res.send(req.session.loggedIn)
+exp.get('/main', async function (req, res) {
+  res.send(req.cookies['loggedIn'])
+  // res.send(req.session.loggedIn)
   // r.send('tes')
 });
 
-exp.post('/generate-surat', function (req, res) {
+exp.post('/generate-surat', async function (req, res) {
   var param = req.body;
+  
   var config = {
-    user: req.session.user,
-    password: req.session.password,
-    server: req.session.server,
-    database: req.session.database,
+    user:  await req.cookies['user'],
+    password:  await req.cookies['password'],
+    server:  await req.cookies['server'],
+    database:  await req.cookies['database'],
     trustServerCertificate: true
   };
+  // var config = {
+  //   user: req.session.user,
+  //   password: req.session.password,
+  //   server: req.session.server,
+  //   database: req.session.database,
+  //   trustServerCertificate: true
+  // };
 
   sql.connect(config, function (err) {
     var request = new sql.Request();
