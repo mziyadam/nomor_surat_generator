@@ -46,6 +46,7 @@ function createWindow() {
     width: 800,
     height: 200,
     modal: true,
+    // frame:false,
     show: false,
     maximizable: false,
     resizable: false,

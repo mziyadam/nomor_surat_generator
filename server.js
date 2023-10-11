@@ -187,7 +187,31 @@ exp.get('/klasifikasi', function (req, res) {
 });
 
 exp.get('/main', function (req, res) {
-  res.send(req.session.loggedIn)
+  // res.send(req.session.loggedIn)
+  const data = fs.readFileSync('./setting.json', {
+    encoding: 'utf8',
+    flag: 'r'
+  });
+  const jsonData = JSON.parse(data);
+  var config = {
+    user: req.session.user || jsonData.user,
+    password: req.session.password || jsonData.password,
+    server: req.session.server || jsonData.server,
+    database: req.session.database || jsonData.database,
+    trustServerCertificate: true
+  };
+
+  sql.connect(config, function (err) {
+    var request = new sql.Request();
+    request.query("select 1 as ok", (err, result) => {
+      console.dir(result)
+      if(result==''){
+        res.send(null)
+      }else{
+        res.send(result);
+      }
+    })
+  });
   // r.send('tes')
 });
 
