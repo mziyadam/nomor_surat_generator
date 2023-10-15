@@ -12,6 +12,7 @@
   "devDependencies": {
     "@electron/rebuild": "^3.3.0",
     "electron": "^26.2.4",
+    "electron-packager": "^17.1.2",
     "msnodesqlv8": "^4.1.0",
     "mssql": "^10.0.1"
   },

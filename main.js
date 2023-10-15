@@ -11,7 +11,7 @@ const {
 } = require('electron')
 
 const fs = require('fs');
-Menu.setApplicationMenu(false)
+// Menu.setApplicationMenu(false)
 
 function handleSetTitle(event, title) {
   const webContents = event.sender
